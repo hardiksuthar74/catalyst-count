@@ -1,0 +1,4 @@
+env
+venv
+catalyst-count/.env
+__pycache__

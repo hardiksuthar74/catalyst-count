@@ -1,0 +1,244 @@
+{% extends "home.html" %} {% block content %}{% include "loader.html" %}
+<div class="p-4">
+  <div id="count-display" class="mt-4 text-blue-600 font-bold text-lg h-[50px]">
+    <!-- The count will be displayed here -->
+  </div>
+  <div>
+    <div class="flex justify-start items-center gap-x-2 mb-4">
+      <i class="fa fa-building text-2xl" aria-hidden="true"></i>
+      <p class="text-2xl">Search company</p>
+    </div>
+    <form id="query-form">
+      <div class="grid grid-cols-3 gap-y-6 justify-start gap-x-6">
+        <div class="flex flex-col">
+          <label>Keyword</label>
+          <input
+            name="keyword"
+            type="text"
+            placeholder="Enter keyword..."
+            class="border p-1 rounded-md pl-4"
+          />
+        </div>
+        <div class="flex flex-col">
+          <label>Select industry</label>
+          <select
+            id="industry-select"
+            name="industry"
+            class="w-full border p-1 rounded-md pl-4 capitalize"
+          >
+            <option value="">Select Industry</option>
+          </select>
+        </div>
+        <div class="flex flex-col">
+          <label>Year founded</label>
+          <input
+            name="year_founded"
+            type="number"
+            class="w-full border p-1 rounded-md pl-4"
+            placeholder="Enter year Founded..."
+          />
+        </div>
+        <div class="flex flex-col">
+          <label>Country</label>
+          <select
+            name="country"
+            id="country-select"
+            class="w-full border p-1 rounded-md pl-4 capitalize"
+          >
+            <option value="">Select country</option>
+          </select>
+        </div>
+        <div class="flex flex-col">
+          <label>Select state</label>
+          <select
+            name="state"
+            id="state-select"
+            class="w-full border p-1 rounded-md pl-4 capitalize"
+          >
+            <option value="">Select State</option>
+          </select>
+        </div>
+        <div class="flex flex-col">
+          <label>Select city</label>
+          <select
+            name="city"
+            id="city-select"
+            class="w-full border p-1 rounded-md pl-4 capitalize"
+          >
+            <option value="">Select City/District</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col">
+          <label>Employes (From)</label>
+          <input
+            name="employees_from"
+            type="number"
+            class="w-full border p-1 rounded-md pl-4"
+            placeholder="Enter employees range..."
+          />
+        </div>
+        <div class="flex flex-col">
+          <label>Employees (To)</label>
+          <input
+            name="employees_to"
+            type="number"
+            class="w-full border p-1 rounded-md pl-4"
+            placeholder="Enter employees range..."
+          />
+        </div>
+
+        <div class="col-span-3 mt-10">
+          <div class="flex justify-center items-center gap-x-6 text-white">
+            <button
+              class="bg-blue-400 hover:bg-blue-400/90 px-4 py-2 rounded-md"
+              type="submit"
+            >
+              Query Data
+            </button>
+            <button
+              class="bg-blue-400 hover:bg-blue-400/90 px-4 py-2 rounded-md"
+              type="reset"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  document
+    .getElementById("country-select")
+    .addEventListener("change", function () {
+      const country = this.value;
+      const stateSelect = document.getElementById("state-select");
+
+      // Clear existing states
+      stateSelect.innerHTML = '<option value="">Select State</option>';
+
+      if (country) {
+        fetch(`/app/fetch-state/${country}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.states) {
+              data.states.forEach((state) => {
+                const option = document.createElement("option");
+                option.value = state;
+                option.textContent = state;
+                option.classList = "capitalize";
+                stateSelect.appendChild(option);
+              });
+            } else {
+              console.error("No states found");
+            }
+          })
+          .catch((error) => console.error("Error fetching states:", error));
+      }
+    });
+
+  document
+    .getElementById("state-select")
+    .addEventListener("change", function () {
+      const state = this.value;
+      const citySelect = document.getElementById("city-select");
+
+      // Clear existing states
+      citySelect.innerHTML = '<option value="">Select City/District</option>';
+
+      if (state) {
+        fetch(`/app/fetch-cities/${state}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.cities) {
+              data.cities.forEach((city) => {
+                const option = document.createElement("option");
+                option.value = city;
+                option.textContent = city;
+                option.classList = "capitalize";
+                citySelect.appendChild(option);
+              });
+            } else {
+              console.error("No cities found");
+            }
+          })
+          .catch((error) => console.error("Error fetching cities:", error));
+      }
+    });
+
+  const form = document.getElementById("query-form");
+  const countDisplay = document.getElementById("count-display");
+
+  form.addEventListener("submit", async (event) => {
+    showLoader();
+    event.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData(form); // Collect the form data
+    const queryParams = new URLSearchParams();
+
+    // Convert FormData into URL parameters
+    formData.forEach((value, key) => {
+      queryParams.append(key, value);
+    });
+
+    const apiUrl = `/app/fetch-total-companies/?${queryParams.toString()}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+      });
+      const data = await response.json();
+      countDisplay.textContent = `${data.count} records found for the query!`;
+    } catch (error) {
+      console.error("Error:", error);
+      countDisplay.textContent = "Failed to fetch count.";
+    } finally {
+      hideLoader();
+    }
+  });
+
+  const industrySelect = document.getElementById("industry-select");
+  const countrySelect = document.getElementById("country-select");
+
+  fetch(`/app/fetch-industry/`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.industries) {
+        data.industries.forEach((industry) => {
+          const option = document.createElement("option");
+          option.value = industry;
+          option.textContent = industry;
+          option.classList = "capitalize";
+          industrySelect.appendChild(option);
+        });
+      } else {
+        console.error("No cities found");
+      }
+    })
+    .catch((error) => console.error("Error fetching industries:", error));
+  fetch(`/app/fetch-country/`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.countries) {
+        data.countries.forEach((country) => {
+          const option = document.createElement("option");
+          option.value = country;
+          option.textContent = country;
+          option.classList = "capitalize";
+          countrySelect.appendChild(option);
+        });
+      } else {
+        console.error("No cities found");
+      }
+    })
+    .catch((error) => console.error("Error fetching countries:", error));
+
+  const showLoader = () => {
+    document.getElementById("loader").classList.remove("hidden");
+  };
+  const hideLoader = () => {
+    document.getElementById("loader").classList.add("hidden");
+  };
+</script>
+{% endblock %}

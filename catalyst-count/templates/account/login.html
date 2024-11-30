@@ -1,0 +1,66 @@
+{% extends "base.html" %} {% block content %}
+<div class="min-h-screen flex justify-center items-center">
+  <div class="w-full flex flex-col justify-center items-center">
+    <div class="w-full max-w-md p-6 rounded-md bg-gray-100 shadow-md">
+      <h1 class="text-2xl font-bold mb-4">Login</h1>
+      <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %} {% if form.non_field_errors %}
+        <div class="text-red-600 text-sm mb-4">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="mb-4">
+          <label for="id_login" class="block text-sm font-medium text-gray-700"
+            >Username</label
+          >
+          <input
+            placeholder="Enter username"
+            type="text"
+            name="login"
+            id="id_login"
+            class="mt-1 block w-full p-2 bg-white border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+          {% if form.login.errors %}
+          <div class="text-red-600 text-sm mt-1">{{ form.login.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          <label
+            for="id_password"
+            class="block text-sm font-medium text-gray-700"
+            >Password</label
+          >
+          <input
+            placeholder="Enter password"
+            type="password"
+            name="password"
+            id="id_password"
+            class="mt-1 block w-full p-2 bg-white border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+          {% if form.password.errors %}
+          <div class="text-red-600 text-sm mt-1">
+            {{ form.password.errors }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            type="submit"
+            class="w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-400 hover:bg-blue-400/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Login
+          </button>
+        </div>
+      </form>
+      <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">
+          Don't have an account?
+          <a
+            href="{% url 'account_signup' %}"
+            class="text-blue-500 hover:underline"
+            >Register</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

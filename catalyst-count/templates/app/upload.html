@@ -1,0 +1,222 @@
+{% extends "home.html" %} {% block content %} {% include "loader.html" %}
+
+<div class="flex gap-x-8">
+  <div
+    class="w-full bg-[#f5f7f9] p-6 rounded-lg shadow-sm h-full border-dotted border-2"
+  >
+    <form id="uploadForm" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="p-4">
+        <div>
+          <label
+            id="file-name"
+            for="file-upload"
+            class="block text-sm font-medium text-gray-700"
+            >Upload File</label
+          >
+          <div class="mt-2">
+            <input
+              onchange="showFileName()"
+              type="file"
+              id="file-upload"
+              type="file"
+              name="file-upload"
+              accept=".csv"
+              class="hidden"
+              required
+            />
+            <label
+              for="file-upload"
+              class="w-full cursor-pointer flex items-center justify-center py-2 px-4 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 hover:bg-gray-100 transition"
+            >
+              <svg
+                class="h-5 w-5 text-gray-400 mr-2"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 5a1 1 0 011 1v8.586l3.707-3.707a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 111.414-1.414L9 14.586V6a1 1 0 011-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="text-sm text-gray-500">Click to upload</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="w-full flex justify-center items-center mt-10">
+          <button
+            id="submit-btn"
+            disabled
+            class="bg-blue-400 text-white px-4 py-2 rounded-md disabled:bg-blue-400/60 disabled:cursor-not-allowed"
+            type="submit"
+          >
+            Upload
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="w-full h-full">
+    <div class="bg-white shadow-sm mt-4 rounded-lg space-y-6">
+      <h2 class="text-base font-semibold text-gray-800">User Upload History</h2>
+      <div>
+        <div id="show-user-past-data" class="space-y-6"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showFileName() {
+    const fileInput = document.getElementById("file-upload");
+    const fileName = fileInput.files[0]?.name;
+    const fileNameDisplay = document.getElementById("file-name");
+
+    if (fileName) {
+      document.getElementById("submit-btn").disabled = false;
+      fileNameDisplay.textContent = "";
+      fileNameDisplay.insertAdjacentHTML(
+        "afterbegin",
+        `<i class="fa fa-file" aria-hidden="true"></i> ${fileName}`
+      );
+    } else {
+      document.getElementById("submit-btn").disabled = true;
+      fileNameDisplay.textContent = "";
+    }
+  }
+
+  document
+    .getElementById("uploadForm")
+    .addEventListener("submit", function (event) {
+      showLoader();
+      event.preventDefault();
+      document.getElementById("submit-btn").disabled = true;
+
+      // Create a FormData object to hold the file
+      var formData = new FormData();
+      var fileInput = document.getElementById("file-upload");
+      var csrfToken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+      ).value;
+
+      formData.append("csv_file", fileInput.files[0]);
+
+      fetch("/app/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          hideLoader();
+          fetchAllUserHistoryData();
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          hideLoader();
+          document.getElementById("submit-btn").disabled = true;
+        });
+    });
+
+  let interval;
+
+  const fetchAllUserHistoryData = () => {
+    const userHistoryDataContainer = document.getElementById(
+      "show-user-past-data"
+    );
+    fetch("/app/fetch-all-user-history/")
+      .then((response) => response.json())
+      .then((data) => {
+        const finalData = data?.data;
+
+        const newIds = new Set(finalData?.map((el) => el.id));
+
+        Array.from(userHistoryDataContainer.children).forEach((child) => {
+          if (!newIds.has(child.dataset.id)) {
+            child.remove();
+          }
+        });
+
+        finalData?.forEach((el) => {
+          const existingElement = userHistoryDataContainer.querySelector(
+            `[data-id="${el.id}"]`
+          );
+          const htmlToRender = genrateHtmlForData(el);
+
+          if (existingElement) {
+            if (existingElement.outerHTML !== htmlToRender) {
+              existingElement.outerHTML = htmlToRender;
+            }
+          } else {
+            userHistoryDataContainer.insertAdjacentHTML(
+              "beforeend",
+              htmlToRender
+            );
+          }
+        });
+        if (data?.pending_count != 0) {
+          if (!interval) {
+            interval = setInterval(fetchAllUserHistoryData, 10000);
+          }
+        } else {
+          if (interval) {
+            clearInterval(interval);
+            interval = null;
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user history data:", error);
+      });
+  };
+
+  fetchAllUserHistoryData();
+
+  const genrateHtmlForData = (data) => {
+    let firsthtml = `
+                <div class="bg-[#f5f7f9] border p-4 rounded-lg shadow-sm">
+                  <div class="space-y-2 flex justify-start items-center gap-x-4">
+                    <i class="fa fa-table text-lg bg-green-100 text-[#101010] w-10 h-10 flex justify-center items-center rounded-md" aria-hidden="true"></i>
+                    <div>
+                    <p class="text-lg font-medium text-gray-700">
+                      <span class="text-blue-600 text-sm">${data.file_name}</span>
+                    </p>
+                    <p class="text-[14px] text-gray-500">
+                      csv . <span class="text-green-600 text-[14px]">${data.status}</span> . <span class="text-gray-800 text-[12px]">${data?.created_at}</span>
+                    </p>
+                    </div>
+                    </div>
+
+                  `;
+    if (data?.progress != 100) {
+      firsthtml =
+        firsthtml +
+        `<div class="w-full bg-gray-200 rounded-full h-1 mt-4">
+                <div
+                  class="bg-blue-600 h-1 rounded-full transition-all"
+                  style="width: ${data.progress}%;">
+                </div>
+              </div>`;
+    }
+
+    return firsthtml;
+  };
+
+  const showLoader = () => {
+    document.getElementById("loader").classList.remove("hidden");
+  };
+  const hideLoader = () => {
+    document.getElementById("loader").classList.add("hidden");
+  };
+</script>
+{% endblock %}
