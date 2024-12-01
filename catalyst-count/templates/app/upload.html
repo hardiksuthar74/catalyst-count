@@ -1,6 +1,6 @@
 {% extends "home.html" %} {% block content %} {% include "loader.html" %}
 
-<div class="flex gap-x-8">
+<div class="flex gap-x-8 max-lg:flex-col">
   <div
     class="w-full bg-[#f5f7f9] p-6 rounded-lg shadow-sm h-full border-dotted border-2"
   >
@@ -43,7 +43,10 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <span class="text-sm text-gray-500">Click to upload</span>
+              <span
+                class="text-sm text-gray-500 max-sm:text-nowrap max-sm:text-[10px]"
+                >Click to upload</span
+              >
             </label>
           </div>
         </div>

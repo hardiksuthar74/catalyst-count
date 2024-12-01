@@ -15,7 +15,9 @@
   <body class="bg-[#f5f7f9]">
     {% include "navbar.html" %}
     <script src="https://cdn.tailwindcss.com"></script>
-    <div class="ml-[260px] p-10 bg-[#fff] min-h-screen rounded-3xl border">
+    <div
+      class="ml-[260px] p-10 bg-[#fff] min-h-screen rounded-3xl border max-sm:ml-0"
+    >
       {% block content %}{% endblock %}
     </div>
   </body>

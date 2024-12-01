@@ -7,10 +7,10 @@
 </style>
 
 <div
-  class="w-[260px] text-black fixed h-full top-0 bottom-0 left-0 bg-[#f5f7f9]"
+  class="w-[260px] text-black fixed h-full bottom-0 left-0 bg-[#f5f7f9] max-sm:w-full max-sm:h-10 sm:top-0"
 >
-  <div class="px-4 py-10">
-    <div class="flex justify-start gap-x-6 items-center">
+  <div class="px-4 py-10 max-sm:px-0 max-sm:py-0 max-sm:h-full">
+    <div class="flex justify-start gap-x-6 items-center max-sm:hidden">
       <img
         class="w-10 h-10 rounded-full"
         src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/f8239007-7d36-45ce-a0a1-fdf91052b10e/299f5e14-73c4-4a9b-99c9-e44adbc218cf.png"
@@ -21,48 +21,48 @@
       </div>
     </div>
 
-    <hr class="my-6" />
+    <hr class="my-6 max-sm:hidden" />
 
-    <div class="flex flex-col gap-y-2 text-[#9799a2]">
+    <div
+      class="flex flex-col max-sm:h-full max-sm:items-center gap-y-2 text-[#9799a2] max-sm:flex-row max-sm:gap-y-0 max-sm:w-full max-sm:justify-center max-sm:gap-x-4"
+    >
       <a href="upload">
         <div
           id="upload-link"
-          class="flex gap-x-4 justify-start items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow"
+          class="flex gap-x-4 justify-start max-sm:justify-center items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow"
         >
           <i
             class="fa fa-cloud-upload w-5 flex justify-center items-center"
             aria-hidden="true"
           ></i>
-
-          Upload Data
+          <span class="max-sm:hidden"> Upload Data </span>
         </div>
       </a>
       <a href="company">
         <div
           id="query-link"
-          class="flex gap-x-4 justify-start items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow"
+          class="flex gap-x-4 justify-start max-sm:justify-center items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow"
         >
           <i
             class="fa fa-database w-5 flex justify-center items-center"
             aria-hidden="true"
           ></i>
-
-          Query Builder
+          <span class="max-sm:hidden"> Query Builder </span>
         </div>
       </a>
 
-      <form class="w-full" method="post" action="{% url 'account_logout' %}">
+      <form class="sm:w-full" method="post" action="{% url 'account_logout' %}">
         {% csrf_token %}
 
         <button
           type="submit"
-          class="flex gap-x-4 justify-start items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow w-full"
+          class="flex gap-x-4 justify-start max-sm:justify-center items-center hover:bg-[#fff] hover:text-[#4d4e55] rounded-md px-4 py-2 hover:shadow w-full"
         >
           <i
             class="fa fa-sign-out w-5 flex justify-center items-center"
             aria-hidden="true"
           ></i>
-          Log Out
+          <span class="max-sm:hidden"> Log Out </span>
         </button>
       </form>
     </div>

@@ -1,6 +1,9 @@
 {% extends "home.html" %} {% block content %}{% include "loader.html" %}
 <div class="p-4">
-  <div id="count-display" class="mt-4 text-blue-600 font-bold text-lg h-[50px]">
+  <div
+    id="count-display"
+    class="mt-4 text-blue-600 font-bold text-lg h-[50px] max-sm:mb-4"
+  >
     <!-- The count will be displayed here -->
   </div>
   <div>
@@ -9,7 +12,9 @@
       <p class="text-2xl">Search company</p>
     </div>
     <form id="query-form">
-      <div class="grid grid-cols-3 gap-y-6 justify-start gap-x-6">
+      <div
+        class="grid grid-cols-3 gap-y-6 justify-start gap-x-6 max-md:grid-cols-2 max-sm:grid-cols-1"
+      >
         <div class="flex flex-col">
           <label>Keyword</label>
           <input
@@ -88,7 +93,7 @@
           />
         </div>
 
-        <div class="col-span-3 mt-10">
+        <div class="col-span-3 mt-10 max-md:col-span-2 max-sm:col-span-1">
           <div class="flex justify-center items-center gap-x-6 text-white">
             <button
               class="bg-blue-400 hover:bg-blue-400/90 px-4 py-2 rounded-md"
