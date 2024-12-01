@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Company, UploadHistory
 from app.tasks import add_csv_data_to_db
+from django.shortcuts import redirect
+
 from .serializers import (
     IndustrySerializer,
     CountrySerializer,
@@ -132,3 +134,7 @@ class SendAllUserHistoryView(APIView):
 
         serializer = UploadHistorySerializer(user_upload_history, many=True)
         return Response({"data": serializer.data, "pending_count": pending_count})
+
+
+def redirect_to_login(request, exception=None):
+    return redirect("/accounts/login/")

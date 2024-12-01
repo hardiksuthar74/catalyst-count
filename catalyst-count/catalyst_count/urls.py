@@ -6,3 +6,6 @@ urlpatterns = [
     path("app/", include("app.urls")),
     path("accounts/", include("allauth.urls")),
 ]
+
+
+handler404 = "app.views.redirect_to_login"
